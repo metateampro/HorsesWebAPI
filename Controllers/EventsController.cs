@@ -74,7 +74,7 @@ namespace HorsesWebAPI.Controllers
 
         // POST: api/Events
         [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event @event)
+        public async Task<ActionResult<Event>> PostEvent([FromBody] Event @event)
         {
             _context.Event.Add(@event);
             await _context.SaveChangesAsync();

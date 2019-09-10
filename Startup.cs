@@ -19,6 +19,7 @@ namespace HorsesWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             return services.AddEntityFrameworkNpgsql()
                         .AddDbContext<horsesContext>()
@@ -28,6 +29,11 @@ namespace HorsesWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors(builder => {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyHeader();
+                builder.AllowAnyMethod();
+            });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
