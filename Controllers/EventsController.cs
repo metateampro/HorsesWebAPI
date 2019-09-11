@@ -19,13 +19,27 @@ namespace HorsesWebAPI.Controllers
         public EventsController(horsesContext context)
         {
             _context = context;
+            foreach(var _event in _context.Event)
+            {
+                _context.Entry(_event)
+                    .Collection(_e => _e.Characteristic)
+                    .Load();
+                _context.Entry(_event)
+                    .Collection(_e => _e.Horse)
+                    .Load();
+                _context.Entry(_event)
+                    .Collection(_e => _e.Hclass)
+                    .Load();
+            }
         }
 
         // GET: api/Events
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvent()
         {
-            return await _context.Event.ToListAsync();
+                
+            return await _context.Event
+                .ToListAsync();
         }
 
         // GET: api/Events/5

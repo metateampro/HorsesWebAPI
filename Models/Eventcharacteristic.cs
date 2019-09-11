@@ -5,7 +5,7 @@ namespace HorsesWebAPI.Models
 {
     public partial class Eventcharacteristic
     {
-        public int Eventcharacteristic1 { get; set; }
+        public int Eventcharacteristicid { get; set; }
         public int? Eventid { get; set; }
         public int? Characteristicid { get; set; }
 

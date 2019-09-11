@@ -46,7 +46,7 @@ namespace HorsesWebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEventcharacteristic(int id, Eventcharacteristic eventcharacteristic)
         {
-            if (id != eventcharacteristic.Eventcharacteristic1)
+            if (id != eventcharacteristic.Eventcharacteristicid)
             {
                 return BadRequest();
             }
@@ -79,7 +79,7 @@ namespace HorsesWebAPI.Controllers
             _context.Eventcharacteristic.Add(eventcharacteristic);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEventcharacteristic", new { id = eventcharacteristic.Eventcharacteristic1 }, eventcharacteristic);
+            return CreatedAtAction("GetEventcharacteristic", new { id = eventcharacteristic.Eventcharacteristicid }, eventcharacteristic);
         }
 
         // DELETE: api/Eventcharacteristics/5
@@ -100,7 +100,7 @@ namespace HorsesWebAPI.Controllers
 
         private bool EventcharacteristicExists(int id)
         {
-            return _context.Eventcharacteristic.Any(e => e.Eventcharacteristic1 == id);
+            return _context.Eventcharacteristic.Any(e => e.Eventcharacteristicid == id);
         }
     }
 }

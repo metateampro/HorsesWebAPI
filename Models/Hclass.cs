@@ -11,9 +11,11 @@ namespace HorsesWebAPI.Models
             Horse = new HashSet<Horse>();
         }
 
-        public int Classid { get; set; }
+        public int Hclassid { get; set; }
         public string Title { get; set; }
+        public int? Eventid { get; set; }
 
+        public virtual Event Event { get; set; }
         public virtual ICollection<Eventhclass> Eventhclass { get; set; }
         public virtual ICollection<Horse> Horse { get; set; }
     }

@@ -1,9 +1,8 @@
 ﻿using System;
-using HorsesWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace HorsesWebAPI
+namespace HorsesWebAPI.Models
 {
     public partial class horsesContext : DbContext
     {
@@ -30,7 +29,7 @@ namespace HorsesWebAPI
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=horses;Username=postgres;Password=1488");
+                optionsBuilder.UseNpgsql("Host=localhost;Database=horses;Username=postgres;Password=1488");
             }
         }
 
@@ -46,9 +45,17 @@ namespace HorsesWebAPI
                     .HasColumnName("characteristicid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasColumnName("title")
                     .HasColumnType("character varying");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Characteristic)
+                    .HasForeignKey(d => d.Eventid)
+                    .HasConstraintName("characteristic_eventid_fkey");
             });
 
             modelBuilder.Entity<Evaluate>(entity =>
@@ -113,13 +120,10 @@ namespace HorsesWebAPI
 
             modelBuilder.Entity<Eventcharacteristic>(entity =>
             {
-                entity.HasKey(e => e.Eventcharacteristic1)
-                    .HasName("eventcharacteristic_pkey");
-
                 entity.ToTable("eventcharacteristic");
 
-                entity.Property(e => e.Eventcharacteristic1)
-                    .HasColumnName("eventcharacteristic")
+                entity.Property(e => e.Eventcharacteristicid)
+                    .HasColumnName("eventcharacteristicid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
                 entity.Property(e => e.Characteristicid).HasColumnName("characteristicid");
@@ -148,19 +152,19 @@ namespace HorsesWebAPI
                     .HasColumnName("eventclassid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
-                entity.Property(e => e.Classid).HasColumnName("classid");
-
                 entity.Property(e => e.Eventid).HasColumnName("eventid");
 
-                entity.HasOne(d => d.Class)
-                    .WithMany(p => p.Eventhclass)
-                    .HasForeignKey(d => d.Classid)
-                    .HasConstraintName("eventclass_classid_fkey");
+                entity.Property(e => e.Hclassid).HasColumnName("hclassid");
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.Eventhclass)
                     .HasForeignKey(d => d.Eventid)
                     .HasConstraintName("eventclass_eventid_fkey");
+
+                entity.HasOne(d => d.Hclass)
+                    .WithMany(p => p.Eventhclass)
+                    .HasForeignKey(d => d.Hclassid)
+                    .HasConstraintName("eventclass_classid_fkey");
             });
 
             modelBuilder.Entity<Eventhorse>(entity =>
@@ -188,18 +192,23 @@ namespace HorsesWebAPI
 
             modelBuilder.Entity<Hclass>(entity =>
             {
-                entity.HasKey(e => e.Classid)
-                    .HasName("hclass_pkey");
-
                 entity.ToTable("hclass");
 
-                entity.Property(e => e.Classid)
-                    .HasColumnName("classid")
+                entity.Property(e => e.Hclassid)
+                    .HasColumnName("hclassid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasColumnName("title")
                     .HasColumnType("character varying");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Hclass)
+                    .HasForeignKey(d => d.Eventid)
+                    .HasConstraintName("hclass_eventid_fkey");
             });
 
             modelBuilder.Entity<Horse>(entity =>
@@ -210,21 +219,27 @@ namespace HorsesWebAPI
                     .HasColumnName("horseid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
-                entity.Property(e => e.Age)
-                    .HasColumnName("age")
-                    .HasColumnType("character varying");
+                entity.Property(e => e.Age).HasColumnName("age");
 
-                entity.Property(e => e.Classid).HasColumnName("classid");
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
+                entity.Property(e => e.Hclassid).HasColumnName("hclassid");
 
                 entity.Property(e => e.Number).HasColumnName("number");
 
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasColumnName("title")
                     .HasColumnType("character varying");
 
-                entity.HasOne(d => d.Class)
+                entity.HasOne(d => d.Event)
                     .WithMany(p => p.Horse)
-                    .HasForeignKey(d => d.Classid)
+                    .HasForeignKey(d => d.Eventid)
+                    .HasConstraintName("horse_eventid_fkey");
+
+                entity.HasOne(d => d.Hclass)
+                    .WithMany(p => p.Horse)
+                    .HasForeignKey(d => d.Hclassid)
                     .HasConstraintName("horse_classid_fkey");
             });
         }

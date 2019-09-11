@@ -46,7 +46,7 @@ namespace HorsesWebAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHclass(int id, Hclass hclass)
         {
-            if (id != hclass.Classid)
+            if (id != hclass.Hclassid)
             {
                 return BadRequest();
             }
@@ -79,7 +79,7 @@ namespace HorsesWebAPI.Controllers
             _context.Hclass.Add(hclass);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHclass", new { id = hclass.Classid }, hclass);
+            return CreatedAtAction("GetHclass", new { id = hclass.Hclassid }, hclass);
         }
 
         // DELETE: api/Hclasses/5
@@ -100,7 +100,7 @@ namespace HorsesWebAPI.Controllers
 
         private bool HclassExists(int id)
         {
-            return _context.Hclass.Any(e => e.Classid == id);
+            return _context.Hclass.Any(e => e.Hclassid == id);
         }
     }
 }
