@@ -53,7 +53,7 @@ namespace HorsesWebAPI.Models
                     .HasColumnType("character varying");
 
                 entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Characteristic)
+                    .WithMany(p => p.Characteristics)
                     .HasForeignKey(d => d.Eventid)
                     .HasConstraintName("characteristic_eventid_fkey");
             });
@@ -206,7 +206,7 @@ namespace HorsesWebAPI.Models
                     .HasColumnType("character varying");
 
                 entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Hclass)
+                    .WithMany(p => p.Hclasses)
                     .HasForeignKey(d => d.Eventid)
                     .HasConstraintName("hclass_eventid_fkey");
             });
@@ -233,7 +233,7 @@ namespace HorsesWebAPI.Models
                     .HasColumnType("character varying");
 
                 entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Horse)
+                    .WithMany(p => p.Horses)
                     .HasForeignKey(d => d.Eventid)
                     .HasConstraintName("horse_eventid_fkey");
 

@@ -22,13 +22,13 @@ namespace HorsesWebAPI.Controllers
             foreach(var _event in _context.Event)
             {
                 _context.Entry(_event)
-                    .Collection(_e => _e.Characteristic)
+                    .Collection(_e => _e.Characteristics)
                     .Load();
                 _context.Entry(_event)
-                    .Collection(_e => _e.Horse)
+                    .Collection(_e => _e.Horses)
                     .Load();
                 _context.Entry(_event)
-                    .Collection(_e => _e.Hclass)
+                    .Collection(_e => _e.Hclasses)
                     .Load();
             }
         }
