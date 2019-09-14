@@ -37,7 +37,7 @@ namespace HorsesWebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvent()
         {
-                
+
             return await _context.Event
                 .ToListAsync();
         }
@@ -58,14 +58,15 @@ namespace HorsesWebAPI.Controllers
 
         // PUT: api/Events/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(int id, Event @event)
+        public async Task<ActionResult<Event>> PutEvent(int id, [FromBody] Event @event)
         {
             if (id != @event.Eventid)
             {
                 return BadRequest();
             }
-
-            _context.Entry(@event).State = EntityState.Modified;
+            var existingEvent = _context.Event.Find(@event.Eventid);
+            if (existingEvent != null)
+                _context.Entry(existingEvent).CurrentValues.SetValues(@event);
 
             try
             {
@@ -83,7 +84,7 @@ namespace HorsesWebAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return existingEvent;
         }
 
         // POST: api/Events

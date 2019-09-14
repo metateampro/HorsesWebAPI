@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace HorsesWebAPI.Models
 {
-    public partial class Hclass
+    public partial class Hclasses
     {
-        public Hclass()
+        public Hclasses()
         {
-            Eventhclass = new HashSet<Eventhclass>();
-            Horse = new HashSet<Horse>();
+            Horses = new HashSet<Horses>();
         }
 
         public int Hclassid { get; set; }
@@ -16,7 +15,6 @@ namespace HorsesWebAPI.Models
         public int? Eventid { get; set; }
 
         public virtual Event Event { get; set; }
-        public virtual ICollection<Eventhclass> Eventhclass { get; set; }
-        public virtual ICollection<Horse> Horse { get; set; }
+        public virtual ICollection<Horses> Horses { get; set; }
     }
 }

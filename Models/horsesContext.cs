@@ -15,14 +15,11 @@ namespace HorsesWebAPI.Models
         {
         }
 
-        public virtual DbSet<Characteristic> Characteristic { get; set; }
+        public virtual DbSet<Characteristics> Characteristics { get; set; }
         public virtual DbSet<Evaluate> Evaluate { get; set; }
         public virtual DbSet<Event> Event { get; set; }
-        public virtual DbSet<Eventcharacteristic> Eventcharacteristic { get; set; }
-        public virtual DbSet<Eventhclass> Eventhclass { get; set; }
-        public virtual DbSet<Eventhorse> Eventhorse { get; set; }
-        public virtual DbSet<Hclass> Hclass { get; set; }
-        public virtual DbSet<Horse> Horse { get; set; }
+        public virtual DbSet<Hclasses> Hclasses { get; set; }
+        public virtual DbSet<Horses> Horses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,9 +34,12 @@ namespace HorsesWebAPI.Models
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
 
-            modelBuilder.Entity<Characteristic>(entity =>
+            modelBuilder.Entity<Characteristics>(entity =>
             {
-                entity.ToTable("characteristic");
+                entity.HasKey(e => e.Characteristicid)
+                    .HasName("eventcharacteristics_pkey");
+
+                entity.ToTable("characteristics");
 
                 entity.Property(e => e.Characteristicid)
                     .HasColumnName("characteristicid")
@@ -118,81 +118,12 @@ namespace HorsesWebAPI.Models
                     .HasColumnType("character varying");
             });
 
-            modelBuilder.Entity<Eventcharacteristic>(entity =>
+            modelBuilder.Entity<Hclasses>(entity =>
             {
-                entity.ToTable("eventcharacteristic");
+                entity.HasKey(e => e.Hclassid)
+                    .HasName("hclass_pkey");
 
-                entity.Property(e => e.Eventcharacteristicid)
-                    .HasColumnName("eventcharacteristicid")
-                    .UseNpgsqlIdentityByDefaultColumn();
-
-                entity.Property(e => e.Characteristicid).HasColumnName("characteristicid");
-
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
-
-                entity.HasOne(d => d.Characteristic)
-                    .WithMany(p => p.Eventcharacteristic)
-                    .HasForeignKey(d => d.Characteristicid)
-                    .HasConstraintName("eventcharacteristic_characteristicid_fkey");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Eventcharacteristic)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("eventcharacteristic_eventid_fkey");
-            });
-
-            modelBuilder.Entity<Eventhclass>(entity =>
-            {
-                entity.HasKey(e => e.Eventclassid)
-                    .HasName("eventclass_pkey");
-
-                entity.ToTable("eventhclass");
-
-                entity.Property(e => e.Eventclassid)
-                    .HasColumnName("eventclassid")
-                    .UseNpgsqlIdentityByDefaultColumn();
-
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
-
-                entity.Property(e => e.Hclassid).HasColumnName("hclassid");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Eventhclass)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("eventclass_eventid_fkey");
-
-                entity.HasOne(d => d.Hclass)
-                    .WithMany(p => p.Eventhclass)
-                    .HasForeignKey(d => d.Hclassid)
-                    .HasConstraintName("eventclass_classid_fkey");
-            });
-
-            modelBuilder.Entity<Eventhorse>(entity =>
-            {
-                entity.ToTable("eventhorse");
-
-                entity.Property(e => e.Eventhorseid)
-                    .HasColumnName("eventhorseid")
-                    .UseNpgsqlIdentityByDefaultColumn();
-
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
-
-                entity.Property(e => e.Horseid).HasColumnName("horseid");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Eventhorse)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("eventhorseid_eventid_fkey");
-
-                entity.HasOne(d => d.Horse)
-                    .WithMany(p => p.Eventhorse)
-                    .HasForeignKey(d => d.Horseid)
-                    .HasConstraintName("eventhorseid_horseid_fkey");
-            });
-
-            modelBuilder.Entity<Hclass>(entity =>
-            {
-                entity.ToTable("hclass");
+                entity.ToTable("hclasses");
 
                 entity.Property(e => e.Hclassid)
                     .HasColumnName("hclassid")
@@ -211,9 +142,12 @@ namespace HorsesWebAPI.Models
                     .HasConstraintName("hclass_eventid_fkey");
             });
 
-            modelBuilder.Entity<Horse>(entity =>
+            modelBuilder.Entity<Horses>(entity =>
             {
-                entity.ToTable("horse");
+                entity.HasKey(e => e.Horseid)
+                    .HasName("horse_pkey");
+
+                entity.ToTable("horses");
 
                 entity.Property(e => e.Horseid)
                     .HasColumnName("horseid")
@@ -238,7 +172,7 @@ namespace HorsesWebAPI.Models
                     .HasConstraintName("horse_eventid_fkey");
 
                 entity.HasOne(d => d.Hclass)
-                    .WithMany(p => p.Horse)
+                    .WithMany(p => p.Horses)
                     .HasForeignKey(d => d.Hclassid)
                     .HasConstraintName("horse_classid_fkey");
             });

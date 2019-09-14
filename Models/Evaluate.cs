@@ -12,8 +12,8 @@ namespace HorsesWebAPI.Models
         public int? Judge { get; set; }
         public decimal? Value { get; set; }
 
-        public virtual Characteristic Characteristic { get; set; }
+        public virtual Characteristics Characteristic { get; set; }
         public virtual Event Event { get; set; }
-        public virtual Horse Horse { get; set; }
+        public virtual Horses Horse { get; set; }
     }
 }
