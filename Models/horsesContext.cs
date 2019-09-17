@@ -15,18 +15,23 @@ namespace HorsesWebAPI.Models
         {
         }
 
-        public virtual DbSet<Characteristics> Characteristics { get; set; }
+        public virtual DbSet<Characteristic> Characteristic { get; set; }
         public virtual DbSet<Evaluate> Evaluate { get; set; }
         public virtual DbSet<Event> Event { get; set; }
-        public virtual DbSet<Hclasses> Hclasses { get; set; }
-        public virtual DbSet<Horses> Horses { get; set; }
+        public virtual DbSet<Eventcharacteristic> Eventcharacteristic { get; set; }
+        public virtual DbSet<Eventhclass> Eventhclass { get; set; }
+        public virtual DbSet<Eventhorse> Eventhorse { get; set; }
+        public virtual DbSet<Hclass> Hclass { get; set; }
+        public virtual DbSet<Horse> Horse { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseNpgsql("Host=localhost;Database=horses;Username=postgres;Password=1488");
+
+                optionsBuilder
+                    .UseLazyLoadingProxies()
+                    .UseNpgsql("Host=localhost;Database=horses;Username=postgres;Password=1488");
             }
         }
 
@@ -34,28 +39,18 @@ namespace HorsesWebAPI.Models
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
 
-            modelBuilder.Entity<Characteristics>(entity =>
+            modelBuilder.Entity<Characteristic>(entity =>
             {
-                entity.HasKey(e => e.Characteristicid)
-                    .HasName("eventcharacteristics_pkey");
-
-                entity.ToTable("characteristics");
+                entity.ToTable("characteristic");
 
                 entity.Property(e => e.Characteristicid)
                     .HasColumnName("characteristicid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasColumnName("title")
                     .HasColumnType("character varying");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Characteristics)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("characteristic_eventid_fkey");
             });
 
             modelBuilder.Entity<Evaluate>(entity =>
@@ -118,44 +113,101 @@ namespace HorsesWebAPI.Models
                     .HasColumnType("character varying");
             });
 
-            modelBuilder.Entity<Hclasses>(entity =>
+            modelBuilder.Entity<Eventcharacteristic>(entity =>
             {
-                entity.HasKey(e => e.Hclassid)
-                    .HasName("hclass_pkey");
+                entity.HasKey(e => new { e.Eventid, e.Characteristicid })
+                    .HasName("eventcharacteristic_pkey");
 
-                entity.ToTable("hclasses");
+                entity.ToTable("eventcharacteristic");
+
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
+                entity.Property(e => e.Characteristicid).HasColumnName("characteristicid");
+
+                entity.HasOne(d => d.Characteristic)
+                    .WithMany(p => p.Eventcharacteristic)
+                    .HasForeignKey(d => d.Characteristicid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventcharacteristic_characteristicid_fkey");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Eventcharacteristic)
+                    .HasForeignKey(d => d.Eventid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventcharacteristic_eventid_fkey");
+            });
+
+            modelBuilder.Entity<Eventhclass>(entity =>
+            {
+                entity.HasKey(e => new { e.Eventid, e.Hclassid })
+                    .HasName("eventhclass_pkey");
+
+                entity.ToTable("eventhclass");
+
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
+                entity.Property(e => e.Hclassid).HasColumnName("hclassid");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Eventhclass)
+                    .HasForeignKey(d => d.Eventid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventhclass_eventid_fkey");
+
+                entity.HasOne(d => d.Hclass)
+                    .WithMany(p => p.Eventhclass)
+                    .HasForeignKey(d => d.Hclassid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventhclass_hclassid_fkey");
+            });
+
+            modelBuilder.Entity<Eventhorse>(entity =>
+            {
+                entity.HasKey(e => new { e.Eventid, e.Horseid })
+                    .HasName("eventhorse_pkey");
+
+                entity.ToTable("eventhorse");
+
+                entity.Property(e => e.Eventid).HasColumnName("eventid");
+
+                entity.Property(e => e.Horseid).HasColumnName("horseid");
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Eventhorse)
+                    .HasForeignKey(d => d.Eventid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventhorse_eventid_fkey");
+
+                entity.HasOne(d => d.Horse)
+                    .WithMany(p => p.Eventhorse)
+                    .HasForeignKey(d => d.Horseid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("eventhorse_horseid_fkey");
+            });
+
+            modelBuilder.Entity<Hclass>(entity =>
+            {
+                entity.ToTable("hclass");
 
                 entity.Property(e => e.Hclassid)
                     .HasColumnName("hclassid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasColumnName("title")
                     .HasColumnType("character varying");
-
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Hclasses)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("hclass_eventid_fkey");
             });
 
-            modelBuilder.Entity<Horses>(entity =>
+            modelBuilder.Entity<Horse>(entity =>
             {
-                entity.HasKey(e => e.Horseid)
-                    .HasName("horse_pkey");
-
-                entity.ToTable("horses");
+                entity.ToTable("horse");
 
                 entity.Property(e => e.Horseid)
                     .HasColumnName("horseid")
                     .UseNpgsqlIdentityByDefaultColumn();
 
                 entity.Property(e => e.Age).HasColumnName("age");
-
-                entity.Property(e => e.Eventid).HasColumnName("eventid");
 
                 entity.Property(e => e.Hclassid).HasColumnName("hclassid");
 
@@ -166,13 +218,8 @@ namespace HorsesWebAPI.Models
                     .HasColumnName("title")
                     .HasColumnType("character varying");
 
-                entity.HasOne(d => d.Event)
-                    .WithMany(p => p.Horses)
-                    .HasForeignKey(d => d.Eventid)
-                    .HasConstraintName("horse_eventid_fkey");
-
                 entity.HasOne(d => d.Hclass)
-                    .WithMany(p => p.Horses)
+                    .WithMany(p => p.Horse)
                     .HasForeignKey(d => d.Hclassid)
                     .HasConstraintName("horse_classid_fkey");
             });

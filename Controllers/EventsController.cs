@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using HorsesWebAPI;
 using HorsesWebAPI.Models;
 
 namespace HorsesWebAPI.Controllers
@@ -19,27 +18,14 @@ namespace HorsesWebAPI.Controllers
         public EventsController(horsesContext context)
         {
             _context = context;
-            foreach(var _event in _context.Event)
-            {
-                _context.Entry(_event)
-                    .Collection(_e => _e.Characteristics)
-                    .Load();
-                _context.Entry(_event)
-                    .Collection(_e => _e.Horses)
-                    .Load();
-                _context.Entry(_event)
-                    .Collection(_e => _e.Hclasses)
-                    .Load();
-            }
         }
 
         // GET: api/Events
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvent()
         {
-
-            return await _context.Event
-                .ToListAsync();
+            
+            return await _context.Event.ToListAsync();
         }
 
         // GET: api/Events/5
@@ -58,15 +44,34 @@ namespace HorsesWebAPI.Controllers
 
         // PUT: api/Events/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<Event>> PutEvent(int id, [FromBody] Event @event)
+        public async Task<IActionResult> PutEvent(int id, Event @event)
         {
             if (id != @event.Eventid)
             {
                 return BadRequest();
             }
-            var existingEvent = _context.Event.Find(@event.Eventid);
-            if (existingEvent != null)
-                _context.Entry(existingEvent).CurrentValues.SetValues(@event);
+            var curEC = _context.Eventcharacteristic
+                                    .Where(_ec => _ec.Eventid == @event.Eventid)
+                                    .ToList();
+            var newEC = @event.Eventcharacteristic;
+
+            _context.Eventcharacteristic.RemoveRange(curEC.Except(newEC));
+            _context.Eventcharacteristic.AddRange(newEC.Except(curEC));
+
+            var curEHC = _context.Eventhclass
+                                    .Where(_ec => _ec.Eventid == @event.Eventid)
+                                    .ToList();
+            var newEHC = @event.Eventhclass;
+
+            _context.Eventhclass.RemoveRange(curEHC.Except(newEHC));
+            _context.Eventhclass.AddRange(newEHC.Except(curEHC));
+            var curEH = _context.Eventhorse
+                                    .Where(_ec => _ec.Eventid == @event.Eventid)
+                                    .ToList();
+            var newEH = @event.Eventhorse;
+
+            _context.Eventhorse.RemoveRange(curEH.Except(newEH));
+            _context.Eventhorse.AddRange(newEH.Except(curEH));
 
             try
             {
@@ -84,12 +89,30 @@ namespace HorsesWebAPI.Controllers
                 }
             }
 
-            return existingEvent;
+            _context.Entry(@event).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EventExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
         // POST: api/Events
         [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent([FromBody] Event @event)
+        public async Task<ActionResult<Event>> PostEvent(Event @event)
         {
             _context.Event.Add(@event);
             await _context.SaveChangesAsync();

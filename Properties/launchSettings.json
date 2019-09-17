@@ -19,7 +19,7 @@
     "HorsesWebAPI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/horses",
+      "launchUrl": "api/events",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

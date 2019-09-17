@@ -7,10 +7,10 @@ namespace HorsesWebAPI.Models
     {
         public Event()
         {
-            Characteristics = new HashSet<Characteristics>();
             Evaluate = new HashSet<Evaluate>();
-            Hclasses = new HashSet<Hclasses>();
-            Horses = new HashSet<Horses>();
+            Eventcharacteristic = new HashSet<Eventcharacteristic>();
+            Eventhclass = new HashSet<Eventhclass>();
+            Eventhorse = new HashSet<Eventhorse>();
         }
 
         public int Eventid { get; set; }
@@ -19,9 +19,9 @@ namespace HorsesWebAPI.Models
         public DateTime? Eventdate { get; set; }
         public string Adress { get; set; }
 
-        public virtual ICollection<Characteristics> Characteristics { get; set; }
         public virtual ICollection<Evaluate> Evaluate { get; set; }
-        public virtual ICollection<Hclasses> Hclasses { get; set; }
-        public virtual ICollection<Horses> Horses { get; set; }
+        public virtual ICollection<Eventcharacteristic> Eventcharacteristic { get; set; }
+        public virtual ICollection<Eventhclass> Eventhclass { get; set; }
+        public virtual ICollection<Eventhorse> Eventhorse { get; set; }
     }
 }
